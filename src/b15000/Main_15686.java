@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -12,33 +13,23 @@ import java.util.StringTokenizer;
 
 public class Main_15686 {
 
-	static int n,m;
+	static int n, m;
+	static int min = Integer.MAX_VALUE;
 	static int[][] arr;
-	static int[][] temp;
-	static boolean[][] visit;
-	static boolean[][] visit2;
-	static int count;
-	static int result;
-	static List<Node> list;
-	static int[] dc = {1, 0, -1, 0};
+	static List<Node> chicken;
+	static boolean[][] route;
+	static boolean[] visit;
 	static int[] dr = {0, 1, 0, -1};
-	static boolean[] select;
-	static class Node implements Comparable<Node>{
+	static int[] dc = {1, 0, -1, 0};
+	static class Node{
 		int r;
 		int c;
-		int weight;
-		public Node(int r, int c, int weight) {
-			super();
-			this.r = r;
+		int count;
+		public Node(int r, int c, int count) {
+			this.r =  r;
 			this.c = c;
-			this.weight = weight;
+			this.count = count;
 		}
-		@Override
-		public int compareTo(Node o) {
-			// TODO Auto-generated method stub
-			return this.weight-o.weight;
-		}
-		
 	}
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -47,90 +38,86 @@ public class Main_15686 {
 		n = Integer.parseInt(st.nextToken());
 		m = Integer.parseInt(st.nextToken());
 		
-		arr = new int[n][n];
-		list = new ArrayList<>();
+		// list에 집의 정보를 저장하고
+		// 조합을 돌려서 치킨집을 선택하고 true 처리함.
 		
+		// 이중 for 문 돌려서 2 && true 찾고, bfs 시작.
+		
+		arr = new int[n][n];
+		chicken = new ArrayList<>();
 		for(int i=0; i<n; i++) {
 			st = new StringTokenizer(br.readLine());
 			for(int j=0; j<n; j++) {
-				int temp = Integer.parseInt(st.nextToken());
-				arr[i][j] = temp;
-				if(temp==2) {
-					list.add(new Node(i, j, 0));
-					count++;
-				}
+				arr[i][j] = Integer.parseInt(st.nextToken());
+				if(arr[i][j]==2) chicken.add(new Node(i, j, 0));
 			}
 		}
-		System.out.println(list.size());
-		select = new boolean[list.size()];
-		combination(0, 0);
-
-		System.out.println(result);
+		
+		// chicken 집 선택(방문체크) 할 배열
+		visit = new boolean[chicken.size()];
+		
+		// 조합 만들기
+		makeCombination(0, 0);
+		
+		System.out.println(min);
 	}
 	
-	
-	static void print() {
-		for(int[] a: arr) {
-			for(int b : a) {
-				System.out.print(b+" ");
-			}
-			System.out.println();
-		}
-	}
-	static void combination(int next, int c) {
-
-		if(c==m) {
-			visit2 = new boolean[n][n];
-			for(int i=0; i<list.size(); i++) {
-				if(select[i]) {
-					int cr = list.get(i).r;
-					int cc = list.get(i).c;
-					visit2[cr][cc] = true;
-					System.out.println(cr+" "+cc);
-				}
-			}
-			print();
-			for(int i=0; i<n; i++) {
-				for(int j=0; j<n; j++) {
-					if(arr[i][j]==1) bfs(i,j);
-				}
-			}
+	static void makeCombination(int next, int count) {
+		if(count == m) {
+			// 치킨 집 선택했으니 bfs 탐색 시작.
+			bfs();
 			return;
 		}
-		
-		for(int i=next; i<list.size(); i++) {
-			select[i] = true;
-			combination(i+1, c+1);
-			select[i] = false;
+		for(int i=next; i<chicken.size(); i++) {
+			if(visit[i]) continue;
+			visit[i] = true;
+			makeCombination(i+1, count+1);
+			visit[i] = false;
 		}
-		
 	}
-	static void bfs(int r, int c) {
-		Queue<Node> q = new ArrayDeque<Main_15686.Node>();
-		q.add(new Node(r, c, 0));
+	
+	static void bfs() {
+		Queue<Node> q = new ArrayDeque<>();
+		route = new boolean[n][n];
+//		for(Node list : chicken) {
+//			System.out.println(list.r+" "+list.c);
+//		}
+//		System.out.println(Arrays.toString(visit));
+		//visit을 통해, 선택한 치킨 집 위치 가져오기
+		for(int i=0; i<visit.length; i++) {
+			if(visit[i]) {
+				Node cur = chicken.get(i);
+				q.add(new Node(cur.r, cur.c, 0));
+			}
+		}
+		// 제대로 치킨집 수 골랐나
+//		System.out.println(q.size());
 		
-		System.out.println("?");
+		// 최솟값 비교를 위한 변수
+		int temp = 0;
+		
+		// 탐색 시작
 		while(!q.isEmpty()) {
 			Node cur = q.poll();
-			int cr = cur.r;
-			int cc = cur.c;
 			
-			if(arr[cr][cc]==2 && visit2[cr][cc]) {
-				result+=cur.weight; 
-				break;
-			}
-			
-			if(visit[cr][cc]) continue;
-			visit[cr][cc] = true;
-			
+			// 사방 탐색
 			for(int i=0; i<4; i++) {
-				int nr = cr+dr[i];
-				int nc = cc+dc[i];
-				if(nr>=0 && nr<n && nc>=0 && nc<n && !visit[nr][nc]) {
-					q.add(new Node(nr, nc, cur.weight+1));
+				int nr = cur.r+dr[i];
+				int nc = cur.c+dc[i];
+				if(nr>=0 && nr<n && nc>=0 && nc<n && !route[nr][nc]) {
+					// 그냥 길이라면
+					if(arr[nr][nc]==1) {
+						temp += cur.count+1;
+					}
+					route[nr][nc] = true;
+					q.add(new Node(nr, nc, cur.count+1));
 				}
 			}
 		}
+//		System.out.println(temp);
+		if(temp==0) return;
+		min = Math.min(temp, min);
 	}
+	
 
 }

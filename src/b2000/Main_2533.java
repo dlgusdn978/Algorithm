@@ -42,7 +42,7 @@ public class Main_2533 {
 		}
 		
 		dfs(1);
-		System.out.println(Arrays.toString(adapter));
+//		System.out.println(Arrays.toString(adapter));
 //		System.out.println(Arrays.toString(visit));
 		int count = 0;
 		for(boolean a : adapter) {

@@ -42,6 +42,7 @@ public class Main_1935 {
 				s1.push(next2);
 				s1.push(next);
 			}
+			
 
 		}
 		System.out.printf("%.2f", Double.parseDouble(s1.peek()));

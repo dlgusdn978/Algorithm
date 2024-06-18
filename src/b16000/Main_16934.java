@@ -24,11 +24,13 @@ public class Main_16934 {
 			map = new HashMap<>();
 		}
 		
-		public int insert(String word) {
+		public int  insert(String word) {
 			TrieNode cur = root;
 			int count = 0;
 			for(char ch : word.toCharArray()) {
-				if(cur.map.get(ch)==null) count++;
+				if(cur.map.containsKey(ch)) {
+					count++;
+				}
 				cur = cur.map.computeIfAbsent(ch, c->new TrieNode());
 			}
 			if(!map.containsKey(word)) {
@@ -39,37 +41,29 @@ public class Main_16934 {
 
 			return count;
 		}
-		public boolean search(String word) {
-			TrieNode cur = root;
-			boolean flag = false;
-			for(char ch: word.toCharArray()) {
-				cur = cur.map.get(ch);
-			}
-			flag = cur.isEndOfWord;
-			cur.isEndOfWord = true;
-			return flag;
-		}
+		
 	}
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		// 가입한 유저의 별칭을 겹치지 않는 선에서 prefix로 따오되,
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		
+		StringBuilder sb = new StringBuilder();
 		int n = Integer.parseInt(br.readLine());
 		
 		Trie root = new Trie();
 		for(int i=0; i<n; i++) {
 			String str = br.readLine();
-			int res = root.insert(str);
-			boolean isEndOfWord = root.search(str);
-			if(res==str.length()) {
-				System.out.println(str.charAt(0));
-			}else if(res==0) {
-				System.out.println(str+root.map.get(str));
+			int count = root.insert(str);
+			if(count<str.length()) {
+//				System.out.println(str.substring(0, count+1));
+				sb.append(str.substring(0, count+1)).append("\n");
 			}else {
-				if(!isEndOfWord) System.out.println(str.substring(0, str.length()));
-				else System.out.println(str.substring(0, str.length()-res+1));
+//				System.out.println(str+root.map.get(str));
+				if(root.map.get(str)!=1) sb.append(str+root.map.get(str)).append("\n");
+				else sb.append(str).append("\n");
+
 			}
 		}
+		System.out.println(sb.toString());
 
 	}
 

@@ -5,7 +5,7 @@ import java.io.*;
 import java.math.*;
 // Online IDE - Code Editor, Compiler, Interpreter
 
-public class Main
+public class Main_1271
 {
     public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));

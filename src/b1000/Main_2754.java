@@ -3,7 +3,7 @@ package b1000;
 
 // Online IDE - Code Editor, Compiler, Interpreter
 import java.util.*;
-public class Main
+public class Main_2754
 {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);

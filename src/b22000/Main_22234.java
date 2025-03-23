@@ -92,7 +92,7 @@ public class Main_22234 {
 		}
 		for(int i=timeTable.length-1; i>0; i--) {
 			if(timeTable[i-1]==0) timeTable[i-1] = timeTable[i];
-		}
+		} 
 		StringBuilder sb = new StringBuilder();
 		for(int a : timeTable) {
 			sb.append(a).append("\n");

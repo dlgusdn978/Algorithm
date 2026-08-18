@@ -7,7 +7,7 @@ public class Main_10799 {
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
-		
+
 		String str = sc.nextLine();
 		
 		Stack<Character> s = new Stack<>();
